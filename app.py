@@ -47,15 +47,17 @@ model = load_model()
 uploaded_file = st.file_uploader("Upload Image")
 
 if uploaded_file:
-    col1, col2 = st.columns(2)   # 👈 เพิ่มตรงนี้
+    col1, col2 = st.columns(2)
 
     with col1:
         img = Image.open(uploaded_file)
         img = img.resize((640,640))
-        st.image(img, caption="Uploaded Image")
+        st.image(img)
 
     with col2:
         results = model(img)
+
+        st.image(results[0].plot(), caption="Detection Result")  # ✔️ ต้องอยู่ระดับนี้
 
 boxes = results[0].boxes
 names = model.names
