@@ -45,17 +45,27 @@ model = load_model()
 uploaded_file = st.file_uploader("Upload Image")
 
 if uploaded_file:
-    img = Image.open(uploaded_file)
-    img = img.resize((640,640))
+    col1, col2 = st.columns(2)   # 👈 เพิ่มตรงนี้
 
-    results = model(img)
-    df = results.pandas().xyxy[0]
-    st.write(results.pandas().xyxy[0])
-    counts = df['name'].value_counts()
+    with col1:
+        img = Image.open(uploaded_file)
+        img = img.resize((640,640))
+        st.image(img, caption="Uploaded Image")
 
-    echino = counts.get('Echinocyte', 0)
-    acantho = counts.get('Acanthocyte', 0)
-    normal = counts.get('Normal cell', 0)
+    with col2:
+        results = model(img)
+        df = results.pandas().xyxy[0]
+        st.write(df)
+
+        counts = df['name'].value_counts()
+
+        echino = counts.get('Echinocyte', 0)
+        acantho = counts.get('Acanthocyte', 0)
+        normal = counts.get('Normal cell', 0)
+
+        st.write("Echinocyte:", echino)
+        st.write("Acanthocyte:", acantho)
+        st.write("Normal:", normal)
 
     total = echino + acantho + normal
 
