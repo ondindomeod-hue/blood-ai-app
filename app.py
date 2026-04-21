@@ -31,13 +31,17 @@ import streamlit as st
 import torch
 from PIL import Image
 
+st.set_page_config(page_title="Blood AI", layout="centered")
+
 @st.cache_resource
 def load_model():
     return torch.hub.load(
         'ultralytics/yolov5',
         'custom',
         path='best.pt',
-        trust_repo=True
+        trust_repo=True,
+        skip_validation=True,   # 👈 เพิ่มอันนี้
+        force_reload=True       # 👈 เพิ่มอันนี้
     )
 
 model = load_model()
