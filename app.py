@@ -32,6 +32,7 @@ if uploaded_file:
 
     with col1:
         img = Image.open(uploaded_file)
+        img = img.resize((640,640))
         st.image(img, caption="🖼 Uploaded Image", use_column_width=True)
 
     # โหลดโมเดล
@@ -45,8 +46,7 @@ def load_model():
     return model
 
 model = load_model()
-
-    results = model(img)
+results = model(img)
     df = results.pandas().xyxy[0]
     counts = df['name'].value_counts()
 
