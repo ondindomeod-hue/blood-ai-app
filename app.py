@@ -39,7 +39,7 @@ def load_model():
 
 model = load_model()
 
-    if uploaded_file:
+if uploaded_file:
     col1, col2 = st.columns(2)
 
     with col1:
