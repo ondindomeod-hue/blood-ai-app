@@ -35,16 +35,12 @@ uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg","png","jpeg"])
 
 import streamlit as st
 import torch
-from PIL import Image
+from ultralytics import YOLO
 
 @st.cache_resource
 def load_model():
-    return torch.hub.load(
-        'ultralytics/yolov5',
-        'custom',
-        path='best.pt',
-        trust_repo=True
-    )
+    model = YOLO("best.pt")   # 👈 ใช้ตรง ๆ
+    return model
 
 model = load_model()
 
