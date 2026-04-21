@@ -33,24 +33,23 @@ from PIL import Image
 
 @st.cache_resource
 def load_model():
-    return torch.hub.load('ultralytics/yolov5',
-                          'custom',
-                          path='best.pt',
-                          trust_repo=True)
+    return torch.hub.load(
+        'ultralytics/yolov5',
+        'custom',
+        path='best.pt',
+        trust_repo=True
+    )
 
 model = load_model()
 
+uploaded_file = st.file_uploader("Upload Image")
+
 if uploaded_file:
-    col1, col2 = st.columns(2)
+    img = Image.open(uploaded_file)
+    img = img.resize((640,640))
 
-    with col1:
-        img = Image.open(uploaded_file)
-        img = img.resize((640,640))
-        st.image(img, caption="🖼 Uploaded Image", use_column_width=True)
-
-    # วิเคราะห์
     results = model(img)
-    df = results.pandas().xyxy[0]
+    st.write(results.pandas().xyxy[0])
     counts = df['name'].value_counts()
 
     echino = counts.get('Echinocyte', 0)
