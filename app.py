@@ -1,3 +1,7 @@
+st.set_page_config(page_title="Blood AI", layout="centered")
+
+st.title("🩸 Blood Cell Analyzer")
+st.caption("Upload image to analyze blood cells")
 import streamlit as st
 from PIL import Image
 import torch
@@ -54,6 +58,7 @@ if uploaded_file:
 
     with col2:
         results = model(img)
+        st.image(results.render()[0], caption="Detection Result")
         df = results.pandas().xyxy[0]
         st.write(df)
 
@@ -63,19 +68,24 @@ if uploaded_file:
         acantho = counts.get('Acanthocyte', 0)
         normal = counts.get('Normal cell', 0)
 
-        st.write("Echinocyte:", echino)
-        st.write("Acanthocyte:", acantho)
-        st.write("Normal:", normal)
+        total = echino + acantho + normal
 
-    total = echino + acantho + normal
+        st.metric("Echinocyte", f"{round(echino/total*100,1)}%")
+        st.metric("Acanthocyte", f"{round(acantho/total*100,1)}%")
+        st.metric("Normal", f"{round(normal/total*100,1)}%")
 
-    if total > 0:
-        e_p = echino/total*100
-        a_p = acantho/total*100
-        n_p = normal/total*100
-    else:
-        e_p = a_p = n_p = 0
+if total > 0:
+    st.metric("Echinocyte", f"{round(echino/total*100,1)}%")
+    st.metric("Acanthocyte", f"{round(acantho/total*100,1)}%")
+    st.metric("Normal", f"{round(normal/total*100,1)}%")
+else:
+    st.warning("⚠️ No cells detected")
 
+if acantho > 5:
+    st.error("⚠️ Abnormal cells detected")
+else:
+    st.success("✅ Mostly normal cells")
+    
     with col2:
         st.markdown("### 📊 Results")
         st.metric("Echinocyte", f"{e_p:.1f}%")
