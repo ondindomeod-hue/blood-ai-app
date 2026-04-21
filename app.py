@@ -1,11 +1,13 @@
-st.set_page_config(page_title="Blood AI", layout="centered")
 
-st.title("🩸 Blood Cell Analyzer")
-st.caption("Upload image to analyze blood cells")
 import streamlit as st
 from PIL import Image
 import torch
 import matplotlib.pyplot as plt
+
+st.set_page_config(page_title="Blood AI", layout="centered")
+
+st.title("🩸 Blood Cell Analyzer")
+st.caption("Upload image to analyze blood cells")
 
 # 🎨 ตั้งค่า
 st.set_page_config(page_title="Blood AI", layout="wide")
