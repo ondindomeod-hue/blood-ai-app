@@ -1,13 +1,7 @@
-
 import streamlit as st
 from PIL import Image
 import torch
 import matplotlib.pyplot as plt
-
-st.set_page_config(page_title="Blood AI", layout="centered")
-
-st.title("🩸 Blood Cell Analyzer")
-st.caption("Upload image to analyze blood cells")
 
 # 🎨 ตั้งค่า
 st.set_page_config(page_title="Blood AI", layout="wide")
@@ -35,19 +29,23 @@ uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg","png","jpeg"])
 
 import streamlit as st
 import torch
-from ultralytics import YOLO
+from PIL import Image
 
 @st.cache_resource
 def load_model():
-    model = YOLO("best.pt")   # 👈 ใช้ตรง ๆ
-    return model
+    return torch.hub.load(
+        'ultralytics/yolov5',
+        'custom',
+        path='best.pt',
+        trust_repo=True
+    )
 
 model = load_model()
 
 uploaded_file = st.file_uploader("Upload Image")
 
 if uploaded_file:
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)   # 👈 เพิ่มตรงนี้
 
     with col1:
         img = Image.open(uploaded_file)
@@ -56,36 +54,28 @@ if uploaded_file:
 
     with col2:
         results = model(img)
+        df = results.pandas().xyxy[0]
+        st.write(df)
 
-        st.image(results[0].plot(), caption="Detection Result")
-
-        boxes = results[0].boxes
-        names = model.names
-
-        counts = {}
-
-        for cls in boxes.cls:
-            name = names[int(cls)]
-            counts[name] = counts.get(name, 0) + 1
+        counts = df['name'].value_counts()
 
         echino = counts.get('Echinocyte', 0)
         acantho = counts.get('Acanthocyte', 0)
         normal = counts.get('Normal cell', 0)
 
-        total = echino + acantho + normal
+        st.write("Echinocyte:", echino)
+        st.write("Acanthocyte:", acantho)
+        st.write("Normal:", normal)
 
-        if total > 0:
-            st.metric("Echinocyte", f"{round(echino/total*100,1)}%")
-            st.metric("Acanthocyte", f"{round(acantho/total*100,1)}%")
-            st.metric("Normal", f"{round(normal/total*100,1)}%")
+    total = echino + acantho + normal
 
-            if acantho > 5:
-                st.error("⚠️ พบเซลล์ผิดปกติ")
-            else:
-                st.success("✅ เซลล์ส่วนใหญ่ปกติ")
-        else:
-            st.info("ℹ️ No cells detected")
-    
+    if total > 0:
+        e_p = echino/total*100
+        a_p = acantho/total*100
+        n_p = normal/total*100
+    else:
+        e_p = a_p = n_p = 0
+
     with col2:
         st.markdown("### 📊 Results")
         st.metric("Echinocyte", f"{e_p:.1f}%")
