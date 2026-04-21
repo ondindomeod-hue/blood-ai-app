@@ -1,5 +1,7 @@
 streamlit
 torch
+torchvision
 opencv-python-headless
 Pillow
 matplotlib
+ultralytics
