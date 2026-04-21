@@ -52,29 +52,21 @@ if uploaded_file:
     with col1:
         img = Image.open(uploaded_file)
         img = img.resize((640,640))
-        st.image(img)
+        st.image(img, caption="Uploaded Image")
 
     with col2:
         results = model(img)
 
-        st.image(results[0].plot(), caption="Detection Result")  # ✔️ ต้องอยู่ระดับนี้
-
-boxes = results[0].boxes
-names = model.names
-
-counts = {}
-
-for cls in boxes.cls:
-    name = names[int(cls)]
-    counts[name] = counts.get(name, 0) + 1
-
-echino = counts.get('Echinocyte', 0)
-acantho = counts.get('Acanthocyte', 0)
-normal = counts.get('Normal cell', 0)
         st.image(results[0].plot(), caption="Detection Result")
-        st.write(df)
 
-        counts = df['name'].value_counts()
+        boxes = results[0].boxes
+        names = model.names
+
+        counts = {}
+
+        for cls in boxes.cls:
+            name = names[int(cls)]
+            counts[name] = counts.get(name, 0) + 1
 
         echino = counts.get('Echinocyte', 0)
         acantho = counts.get('Acanthocyte', 0)
@@ -82,21 +74,17 @@ normal = counts.get('Normal cell', 0)
 
         total = echino + acantho + normal
 
-        st.metric("Echinocyte", f"{round(echino/total*100,1)}%")
-        st.metric("Acanthocyte", f"{round(acantho/total*100,1)}%")
-        st.metric("Normal", f"{round(normal/total*100,1)}%")
+        if total > 0:
+            st.metric("Echinocyte", f"{round(echino/total*100,1)}%")
+            st.metric("Acanthocyte", f"{round(acantho/total*100,1)}%")
+            st.metric("Normal", f"{round(normal/total*100,1)}%")
 
-if total > 0:
-    st.metric("Echinocyte", f"{round(echino/total*100,1)}%")
-    st.metric("Acanthocyte", f"{round(acantho/total*100,1)}%")
-    st.metric("Normal", f"{round(normal/total*100,1)}%")
-else:
-    st.warning("⚠️ No cells detected")
-
-if acantho > 5:
-    st.error("⚠️ Abnormal cells detected")
-else:
-    st.success("✅ Mostly normal cells")
+            if acantho > 5:
+                st.error("⚠️ พบเซลล์ผิดปกติ")
+            else:
+                st.success("✅ เซลล์ส่วนใหญ่ปกติ")
+        else:
+            st.info("ℹ️ No cells detected")
     
     with col2:
         st.markdown("### 📊 Results")
