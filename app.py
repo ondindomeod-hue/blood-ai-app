@@ -56,8 +56,20 @@ if uploaded_file:
 
     with col2:
         results = model(img)
-        st.image(results.render()[0], caption="Detection Result")
-        df = results.pandas().xyxy[0]
+
+boxes = results[0].boxes
+names = model.names
+
+counts = {}
+
+for cls in boxes.cls:
+    name = names[int(cls)]
+    counts[name] = counts.get(name, 0) + 1
+
+echino = counts.get('Echinocyte', 0)
+acantho = counts.get('Acanthocyte', 0)
+normal = counts.get('Normal cell', 0)
+        st.image(results[0].plot(), caption="Detection Result")
         st.write(df)
 
         counts = df['name'].value_counts()
