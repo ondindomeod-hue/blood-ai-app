@@ -49,6 +49,7 @@ if uploaded_file:
     img = img.resize((640,640))
 
     results = model(img)
+    df = results.pandas().xyxy[0]
     st.write(results.pandas().xyxy[0])
     counts = df['name'].value_counts()
 
