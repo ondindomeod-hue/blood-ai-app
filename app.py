@@ -46,7 +46,8 @@ def load_model():
     return model
 
 model = load_model()
-results = model(img)
+
+    results = model(img)
     df = results.pandas().xyxy[0]
     counts = df['name'].value_counts()
 
