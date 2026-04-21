@@ -33,12 +33,12 @@ from PIL import Image
 
 @st.cache_resource
 def load_model():
-    model = torch.hub.load(
-        'ultralytics/yolov5:v6.0',   # 👈 fix version
+    return torch.hub.load(
+        'ultralytics/yolov5',
         'custom',
-        path='best.pt'
+        path='best.pt',
+        trust_repo=True
     )
-    return model
 
 model = load_model()
 
