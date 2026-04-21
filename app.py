@@ -35,8 +35,16 @@ if uploaded_file:
         st.image(img, caption="🖼 Uploaded Image", use_column_width=True)
 
     # โหลดโมเดล
+    import streamlit as st
+import torch
+
+@st.cache_resource
+def load_model():
     model = torch.hub.load('ultralytics/yolov5', 'custom',
-                           path='runs/train/exp/weights/best.pt')
+                           path='best.pt')
+    return model
+
+model = load_model()
 
     results = model(img)
     df = results.pandas().xyxy[0]
