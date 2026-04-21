@@ -4,3 +4,4 @@ matplotlib
 Pillow
 ultralytics
 opencv-python-headless
+tqdm
